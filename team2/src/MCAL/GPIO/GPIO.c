@@ -115,9 +115,9 @@ typedef struct
                - MCAL_NULL_PTR: Null pointer provided as input.
                - MCAL_WRONG_INPUTS: Invalid input parameters.
 */
-MCAL_ErrorStatus_t GPIO_InitPin(GPIO_StrCfg_t *Copy_strCfg_ptr)
+MCALStatus_t GPIO_Init(GPIO_StrCfg_t *Copy_strCfg_ptr, uint8_t NUM_OF_PINS)
 { 
-    MCAL_ErrorStatus_t Loc_GPIOErrorState = MCAL_OK;
+    MCALStatus_t Loc_GPIOErrorState = MCAL_OK;
 
     if(Copy_strCfg_ptr == NULL_t)
     {
@@ -154,19 +154,22 @@ MCAL_ErrorStatus_t GPIO_InitPin(GPIO_StrCfg_t *Copy_strCfg_ptr)
             GPIO->GPIOx_PUPDR |= (Copy_strCfg_ptr[i].pupd << (Copy_strCfg_ptr[i].pin * 2));
             GPIO->GPIOx_MODER |= (Copy_strCfg_ptr[i].mode << (Copy_strCfg_ptr[i].pin * 2));
             GPIO->GPIOx_OTYPER |= (Copy_strCfg_ptr[i].out_type << (Copy_strCfg_ptr[i].pin * 2));
-            if (Copy_strCfg_ptr[i].pin < GPIO_PIN8)
+            if (Copy_strCfg_ptr[i].mode == GPIO_MODE_Alternatefunction)
             {
-                CLR_AFRL_MASK(Copy_strCfg_ptr[i].pin);
-                SET_AFRL_MASK(Copy_strCfg_ptr[i].AF, Copy_strCfg_ptr[i].pin);
-            }
-            else if((Copy_strCfg_ptr[i].pin > GPIO_PIN7) && (Copy_strCfg_ptr[i].pin <= GPIO_PIN15))
-            {
-                CLR_AFRH_MASK((Copy_strCfg_ptr[i].pin - 0x08));
-                SET_AFRH_MASK((Copy_strCfg_ptr[i].AF), (Copy_strCfg_ptr[i].pin - 0x08));
-            }
-            else
-            {
-                Loc_GPIOErrorState = MCAL_WRONG_INPUTS;
+                if (Copy_strCfg_ptr[i].pin < GPIO_PIN8)
+                {
+                    CLR_AFRL_MASK(Copy_strCfg_ptr[i].pin);
+                    SET_AFRL_MASK(Copy_strCfg_ptr[i].AF, Copy_strCfg_ptr[i].pin);
+                }
+                else if((Copy_strCfg_ptr[i].pin > GPIO_PIN7) && (Copy_strCfg_ptr[i].pin <= GPIO_PIN15))
+                {
+                    CLR_AFRH_MASK((Copy_strCfg_ptr[i].pin - 0x08));
+                    SET_AFRH_MASK((Copy_strCfg_ptr[i].AF), (Copy_strCfg_ptr[i].pin - 0x08));
+                }
+                else
+                {
+                    Loc_GPIOErrorState = MCAL_WRONG_INPUTS;
+                }
             }
 
         }
@@ -187,9 +190,9 @@ MCAL_ErrorStatus_t GPIO_InitPin(GPIO_StrCfg_t *Copy_strCfg_ptr)
                - MCAL_OK: Operation successful.
                - MCAL_WRONG_INPUTS: Invalid input parameters.
 */
-MCAL_ErrorStatus_t GPIO_SetPinState(void *port, GPIO_PINS_t Copy_PinNum, GPIO_PinState_t Copy_PinState)
+MCALStatus_t GPIO_SetPinState(void *port, GPIO_PINS_t Copy_PinNum, GPIO_PinState_t Copy_PinState)
 {
-    MCAL_ErrorStatus_t Loc_GPIOErrorState = MCAL_OK;
+    MCALStatus_t Loc_GPIOErrorState = MCAL_OK;
 
     if (Copy_PinState == 0)
     {
@@ -231,9 +234,9 @@ MCAL_ErrorStatus_t GPIO_SetPinState(void *port, GPIO_PINS_t Copy_PinNum, GPIO_Pi
   \return      Status indicating whether the operation was successful or not.
                - MCAL_OK: Operation successful.
 */
-MCAL_ErrorStatus_t GPIO_GetPinState(void *port, GPIO_PINS_t Copy_PinNum, uint8_t* Copy_PinState)
+MCALStatus_t GPIO_GetPinState(void *port, GPIO_PINS_t Copy_PinNum, uint8_t* Copy_PinState)
 {
-    MCAL_ErrorStatus_t Loc_GPIOErrorState = MCAL_OK;
+    MCALStatus_t Loc_GPIOErrorState = MCAL_OK;
 
     *Copy_PinState = ((GPIOPINx->GPIOx_IDR >> Copy_PinNum) & MASK1);
 
@@ -248,9 +251,9 @@ MCAL_ErrorStatus_t GPIO_GetPinState(void *port, GPIO_PINS_t Copy_PinNum, uint8_t
   \return      Status indicating whether the operation was successful or not.
                - MCAL_OK: Operation successful.
 */
-MCAL_ErrorStatus_t GPIO_TogglePinState(void *port, GPIO_PINS_t Copy_PinNum)
+MCALStatus_t GPIO_TogglePinState(void *port, GPIO_PINS_t Copy_PinNum)
 {
-    MCAL_ErrorStatus_t Loc_GPIOErrorState = MCAL_OK;
+    MCALStatus_t Loc_GPIOErrorState = MCAL_OK;
 
     GPIOPINx->GPIOx_ODR ^= MASK1 << Copy_PinNum;
     

@@ -1,11 +1,11 @@
-#ifndef MCAL_USART_USART_REG_H_
-#define MCAL_USART_USART_REG_H_
+#ifndef USART_REGS_H
+#define USART_REGS_H
 
 
 
-#include "STD_TYPES.h"
+#include "std_types.h"
 
-# define __IO       volatile
+# define __IO volatile
 
 
 /*uasrat REGs.h*/
@@ -21,24 +21,16 @@
 */
 typedef struct
 {
-  __IO uint32_t USART_SR;         /*!< USART Status register,                   Address offset: 0x00 */
-  __IO uint32_t USART_DR;         /*!< USART Data register,                     Address offset: 0x04 */
-  __IO uint32_t USART_BRR;        /*!< USART Baud rate register,                Address offset: 0x08 */
-  __IO uint32_t USART_CR1;        /*!< USART Control register 1,                Address offset: 0x0C */
-  __IO uint32_t USART_CR2;        /*!< USART Control register 2,                Address offset: 0x10 */
-  __IO uint32_t USART_CR3;        /*!< USART Control register 3,                Address offset: 0x14 */
-  __IO uint32_t USART_GTPR;       /*!< USART Guard time and prescaler register, Address offset: 0x18 */
-
+  volatile uint32_t SR;         /*!< USART Status register,                   Address offset: 0x00 */
+  volatile uint32_t DR;         /*!< USART Data register,                     Address offset: 0x04 */
+  volatile uint32_t BRR;        /*!< USART Baud rate register,                Address offset: 0x08 */
+  volatile uint32_t CR1;        /*!< USART Control register 1,                Address offset: 0x0C */
+  volatile uint32_t CR2;        /*!< USART Control register 2,                Address offset: 0x10 */
+  volatile uint32_t CR3;        /*!< USART Control register 3,                Address offset: 0x14 */
+  volatile uint32_t GTPR;       /*!< USART Guard time and prescaler register, Address offset: 0x18 */
 } USART_RegStruct;
 /********/
 
-#define USART1_BASE_ADDR     (0x40011000UL)
-#define USART2_BASE_ADDR     (0x40004400UL)
-#define USART6_BASE_ADDR     (0x40011400UL)
-
-#define USART1    ((volatile USART_RegStruct* const)(USART1_BASE_ADDR))
-#define USART2    ((volatile USART_RegStruct* const)(USART2_BASE_ADDR))
-#define USART6    ((volatile USART_RegStruct* const)(USART6_BASE_ADDR))
 
 
 
@@ -56,6 +48,13 @@ typedef struct
 
 
 
+
+
+
+
+
+
+
 /******************************************************************************/
 /*                                                                            */
 /*         Universal Synchronous Asynchronous Receiver Transmitter            */
@@ -63,6 +62,26 @@ typedef struct
 /******************************************************************************/
 /*******************  Bit definition for USART_SR register  *******************/
 
+/** @defgroup UART_Flags   UART FLags
+  *        Elements values convention: 0xXXXX
+  *           - 0xXXXX  : Flag mask in the SR register
+  * @{
+  */
+#define UART_FLAG_CTS                       ((uint32_t)USART_SR_CTS)
+#define UART_FLAG_LBD                       ((uint32_t)USART_SR_LBD)
+#define UART_FLAG_TXE                       ((uint32_t)USART_SR_TXE)
+#define UART_FLAG_TC                        ((uint32_t)USART_SR_TC)
+#define UART_FLAG_RXNE                      ((uint32_t)USART_SR_RXNE)
+#define UART_FLAG_IDLE                      ((uint32_t)USART_SR_IDLE)
+#define UART_FLAG_ORE                       ((uint32_t)USART_SR_ORE)
+#define UART_FLAG_NE                        ((uint32_t)USART_SR_NE)
+#define UART_FLAG_FE                        ((uint32_t)USART_SR_FE)
+#define UART_FLAG_PE                        ((uint32_t)USART_SR_PE)
+
+
+
+
+/*******************  Bit definition for USART_SR register  *******************/
 #define USART_SR_PE_Pos               (0U)
 #define USART_SR_PE_Msk               (0x1UL << USART_SR_PE_Pos)                /*!< 0x00000001 */
 #define USART_SR_PE                   USART_SR_PE_Msk                          /*!<Parity Error                 */
@@ -164,9 +183,6 @@ typedef struct
 #define USART_CR1_OVER8_Pos           (15U)
 #define USART_CR1_OVER8_Msk           (0x1UL << USART_CR1_OVER8_Pos)            /*!< 0x00008000 */
 #define USART_CR1_OVER8               USART_CR1_OVER8_Msk                      /*!<USART Oversampling by 8 enable         */
-#define USART_CR1_OVER16_Pos          (15U)
-#define USART_CR1_OVER16_Msk          (0x1UL << USART_CR1_OVER16_Pos)            
-#define USART_CR1_OVER16              USART_CR1_OVER16_Msk 
 
 /******************  Bit definition for USART_CR2 register  *******************/
 #define USART_CR2_ADD_Pos             (0U)
@@ -260,32 +276,13 @@ typedef struct
 
 /**************************************************************************************************************************/
 
-#define USART_DIV_SAMPLING16(_PCLK_, _BAUD_)            ((uint32_t)((((uint64_t)(_PCLK_))*25U)/(4U*((uint64_t)(_BAUD_)))))
-#define USART_DIVMANT_SAMPLING16(_PCLK_, _BAUD_)        (USART_DIV_SAMPLING16((_PCLK_), (_BAUD_))/100U)
-#define USART_DIVFRAQ_SAMPLING16(_PCLK_, _BAUD_)        ((((USART_DIV_SAMPLING16((_PCLK_), (_BAUD_)) - (USART_DIVMANT_SAMPLING16((_PCLK_), (_BAUD_)) * 100U)) * 16U)\
+#define UART_DIV_SAMPLING16(_PCLK_, _BAUD_)            ((uint32_t)((((uint64_t)(_PCLK_))*25U)/(4U*((uint64_t)(_BAUD_)))))
+#define UART_DIVMANT_SAMPLING16(_PCLK_, _BAUD_)        (UART_DIV_SAMPLING16((_PCLK_), (_BAUD_))/100U)
+#define UART_DIVFRAQ_SAMPLING16(_PCLK_, _BAUD_)        ((((UART_DIV_SAMPLING16((_PCLK_), (_BAUD_)) - (UART_DIVMANT_SAMPLING16((_PCLK_), (_BAUD_)) * 100U)) * 16U)\
                                                          + 50U) / 100U)
-/* USART BRR = mantissa + overflow + fraction
-            = (USART DIVMANT << 4) + (USART DIVFRAQ & 0xF0) + (USART DIVFRAQ & 0x0FU) */
-#define USART_BRR_SAMPLING16(_PCLK_, _BAUD_)            ((USART_DIVMANT_SAMPLING16((_PCLK_), (_BAUD_)) << 4U) + \
-                                                        (USART_DIVFRAQ_SAMPLING16((_PCLK_), (_BAUD_)) & 0xF0U) + \
-                                                        (USART_DIVFRAQ_SAMPLING16((_PCLK_), (_BAUD_)) & 0x0FU))
-
-#define USART_DIV_SAMPLING8(_PCLK_, _BAUD_)             ((uint32_t)((((uint64_t)(_PCLK_))*25U)/(2U*((uint64_t)(_BAUD_)))))
-#define USART_DIVMANT_SAMPLING8(_PCLK_, _BAUD_)         (USART_DIV_SAMPLING8((_PCLK_), (_BAUD_))/100U)
-#define USART_DIVFRAQ_SAMPLING8(_PCLK_, _BAUD_)         ((((USART_DIV_SAMPLING8((_PCLK_), (_BAUD_)) - (USART_DIVMANT_SAMPLING8((_PCLK_), (_BAUD_)) * 100U)) * 8U)\
-                                                         + 50U) / 100U)
-/* USART BRR = mantissa + overflow + fraction
-            = (USART DIVMANT << 4) + ((USART DIVFRAQ & 0xF8) << 1) + (USART DIVFRAQ & 0x07U) */
-#define USART_BRR_SAMPLING8(_PCLK_, _BAUD_)             ((USART_DIVMANT_SAMPLING8((_PCLK_), (_BAUD_)) << 4U) + \
-                                                        ((USART_DIVFRAQ_SAMPLING8((_PCLK_), (_BAUD_)) & 0xF8U) << 1U) + \
-                                                        (USART_DIVFRAQ_SAMPLING8((_PCLK_), (_BAUD_)) & 0x07U))
+/* UART BRR = mantissa + overflow + fraction
+            = (UART DIVMANT << 4) + (UART DIVFRAQ & 0xF0) + (UART DIVFRAQ & 0x0FU) */
+#define UART_BRR_SAMPLING16(_PCLK_, _BAUD_)            ((UART_DIVMANT_SAMPLING16((_PCLK_), (_BAUD_)) << 4U) + (UART_DIVFRAQ_SAMPLING16((_PCLK_), (_BAUD_)) & 0xF0U) + (UART_DIVFRAQ_SAMPLING16((_PCLK_), (_BAUD_)) & 0x0FU))
 
 
-
-
-
-
-
-
-
-#endif // MCAL_USART_USART_REG_H_
+#endif //USART_REGS_H
